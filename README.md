@@ -13,7 +13,12 @@ ElastAlert 2 is well-suited to being run as a microservice, and is available
 as a [Docker container][2]. For more instructions on how to
 configure and run ElastAlert 2 using Docker, see [here][8].
 
-A [Helm chart][7] is also included for easy configuration as a Kubernetes deployment. 
+A [Helm chart][7] is also included for easy configuration as a Kubernetes deployment.
+
+| Tag      | Dockerfile                                  | Image Size |
+| :------- | :-----------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `server` | [Dockerfile](./ElastalertServer.Dockerfile) | [![Elastalert Server Image Size](https://img.shields.io/docker/image-size/barisgece/elastalert/server.svg?logo=docker&color=2496ED "Elastalert Server Image Size")][hub]                |
+| `latest` | [Dockerfile](./Dockerfile)                  | [![Jertel Elastalert Image Size](https://img.shields.io/docker/image-size/jertel/elastalert2/latest.svg?logo=docker&color=2496ED "Jertel Elastalert Image Size")][hub2] |
 
 ## Documentation
 
@@ -38,3 +43,5 @@ ElastAlert 2 is licensed under the [Apache License, Version 2.0][5].
 [6]: https://github.com/jertel/elastalert2/blob/master/CONTRIBUTING.md
 [7]: https://github.com/jertel/elastalert2/tree/master/chart/elastalert2
 [8]: https://elastalert2.readthedocs.io/en/latest/running_elastalert.html
+[hub]: https://hub.docker.com/repository/docker/barisgece/elastalert
+[hub2]: https://hub.docker.com/layers/jertel/elastalert2/latest

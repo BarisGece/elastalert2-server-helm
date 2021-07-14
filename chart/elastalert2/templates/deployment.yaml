@@ -32,6 +32,21 @@ spec:
       securityContext:
 {{ toYaml .Values.podSecurityContext | indent 8 }}
 {{- end }}
+      initContainers:
+        - name: volume-mount-hack
+          image: busybox
+          command: ["sh", "-c", "cp /opt/elastalert/ruleset/* /opt/elastalert/rules/; chmod -R 777 /opt/elastalert/rules; chmod -R 777 /opt/elastalert/rule_templates;"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: rules
+              mountPath: '/opt/elastalert/ruleset'
+            - name: data
+              mountPath: '/opt/elastalert/rules'
+              subPath: rules
+            - name: data
+              mountPath: '/opt/elastalert/rule_templates'
+              subPath: rule_templates
       containers:
       - name: elastalert
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -48,12 +63,37 @@ spec:
         args:
 {{ toYaml .Values.args | indent 10 }}
 {{- end }}
+        ports:
+          - name: http
+            containerPort: 3030
+            protocol: TCP
+          - name: ws
+            containerPort: 3333
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
         volumeMounts:
+          - name: data
+            mountPath: '/opt/elastalert/rule_templates'
+            subPath: rule_templates
+          - name: baserule-config
+            mountPath: '/opt/elastalert/rules/BaseRule.config'
+            subPath: BaseRule.config
+          - name: api-config
+            mountPath: '/opt/elastalert-server/config/config.json'
+            subPath: config.json
           - name: config
             mountPath: '/opt/elastalert/config.yaml'
             subPath: config.yaml
-          - name: rules
+          - name: data
             mountPath: '/opt/elastalert/rules'
+            subPath: rules
 {{- if .Values.elasticsearch.certsVolumeMounts }}
 {{ toYaml .Values.elasticsearch.certsVolumeMounts | indent 10 }}
 {{- end }}
@@ -96,6 +136,21 @@ spec:
 {{ toYaml .Values.affinity | indent 8 }}
 {{- end }}
       volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ template "elastalert.fullname" . }}
+        - name: baserule-config
+          configMap:
+            name: {{ template "elastalert.fullname" . }}-baserule-config
+            items:
+              - key: baserule_config
+                path: BaseRule.config
+        - name: api-config
+          configMap:
+            name: {{ template "elastalert.fullname" . }}-api-config
+            items:
+              - key: elastalert_api_config
+                path: config.json
         - name: rules
 {{- if .Values.secretRulesName }}
           secret:

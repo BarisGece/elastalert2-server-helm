@@ -5,16 +5,17 @@ An ElastAlert 2 helm chart is available in the jertel Helm repository, and can b
 
 ## Installing the Chart
 
-Add the jertel repository to your Helm configuration:
+To install the chart with the release name **`elastalert2`**:
 
-```console
-helm repo add jertel https://helm.jertel.com
-```
+Clone **`elastalert2-server-helm`** Git Repository
 
-Next, install the chart with a release name, such as _elastalert2_:
+```bash
+~$ https://github.com/BarisGece/elastalert2-server-helm.git
 
-```console
-helm install elastalert2 jertel/elastalert2
+~$ helm upgrade -i -n namespace elastalert2 elastalert2-server-helm/chart/elastalert2/ -f values.yaml
+
+# Get History
+~$ helm history -n namespace elastalert2
 ```
 
 The command deploys ElastAlert 2 on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -23,7 +24,7 @@ See the comment in the default `values.yaml` for specifying a `writebackIndex` f
 
 If necessary, open Dev Tools on Kibana and send the below request to avoid errors like `RequestError: TransportError(400, u'search_phase_execution_exception', u'No mapping found for [alert_time] in order to sort on')`
 
-```
+```console
 PUT /elastalert/_mapping/elastalert
 {
   "properties": {
@@ -37,7 +38,7 @@ PUT /elastalert/_mapping/elastalert
 To uninstall/delete the ElastAlert 2 deployment:
 
 ```console
-helm delete elastalert2 --purge
+ helm uninstall -n namespace elastalert2
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
